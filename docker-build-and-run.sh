@@ -1,7 +1,8 @@
 #!/bin/bash
 
+rm -r ./target/
 
-chmod +x mvnw && ./mvnw package
+./mvnw package
 
 docker build -t chatroom-rest-image .
 docker rm chatroom-rest-container
