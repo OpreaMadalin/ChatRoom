@@ -7,9 +7,9 @@
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/RegisterResponse.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/database/MongoController.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/tokens/TokenManager.java
-/home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/hashers/PBKDF2Hasher.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/RegisterRequestBody.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/LoginResponse.java
+/home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/GetChatroomsResponse.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/hashers/HashAlgorithm.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/hashers/SHA256Hasher.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/LoginRequestBody.java

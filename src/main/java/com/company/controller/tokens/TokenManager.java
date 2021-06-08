@@ -1,5 +1,7 @@
 package com.company.controller.tokens;
 
+import java.util.Map;
+
 public class TokenManager {
     private final static String tokenConnector = ".";
     private final String privateKey;
@@ -12,32 +14,45 @@ public class TokenManager {
         this.signature = signature;
     }
 
+    public TokenManager() {
+        Map<String, String> env = System.getenv();
+        this.privateKey = env.get("AUTH_PRIVATE_KEY");
+        this.publicKey = env.get("AUTH_PUBLIC_KEY");
+        this.signature = env.get("AUTH_SIGNATURE");
+    }
+
+    public String generateToken(TokenClaims claims) {
+        return sign(claims.toBase64());
+
+    }
+
     public String sign(String str) {
         return encrypt(signature + tokenConnector + str);
     }
 
-    public boolean verify(String str) {
+    public TokenClaims verifyToken(String str) {
         String decryptedToken = decrypt(str);
         if (decryptedToken.equals("")) {
-            return false;
+            return null;
         }
         String[] tokenComponent = decryptedToken.split(tokenConnector);
         if (tokenComponent.length != 2) {
-            return false;
+            return null;
         }
         if (!tokenComponent[0].equals(signature)) {
-            return false;
+            return null;
         }
-        //in token components[1]
-        return true;
+
+        return TokenClaims.fromBase64(tokenComponent[1]);
     }
 
     public String encrypt(String str) {
-        return "encryptedwith" + publicKey + ";" + str;
+        return "encryptedwith" + publicKey + "shouldbedecryptedwith" + privateKey + ":" + str;
     }
 
     public String decrypt(String str) {
-        return "decriptedwith" + privateKey + ":" + str;
+        return str.replace(
+                "encryptedwith" + publicKey + "shouldbedecrypted" + privateKey + ":", "");
     }
 
     public String getPrivateKey() {
