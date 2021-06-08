@@ -1,6 +1,8 @@
 package com.company.controller;
 
 import com.company.controller.database.MongoController;
+import com.company.controller.hashers.HashAlgorithm;
+import com.company.controller.hashers.SHA256Hasher;
 import com.company.model.LoginRequestBody;
 import com.company.model.LoginResponse;
 import com.company.model.RegisterRequestBody;
@@ -15,10 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
 
+    private final HashAlgorithm hasher = new SHA256Hasher();
+
     @RequestMapping("/register")
     public RegisterResponse register(@RequestBody RegisterRequestBody body) {
 
-        Hasher hasher = new Hasher("SHA256");
         String hashedPassword = hasher.saltAndHash(body.getPassword());
 
         MongoController mc = new MongoController();
@@ -37,7 +40,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequestBody body) {
-        Hasher hasher = new Hasher("SHA-256");
 
         MongoController mc = new MongoController();
         Document result = mc.getUserWithUsername(body.getUsername());

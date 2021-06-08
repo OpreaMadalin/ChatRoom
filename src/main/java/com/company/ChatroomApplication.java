@@ -1,6 +1,8 @@
 package com.company;
 
-import com.company.controller.Hasher;
+import com.company.controller.hashers.HashAlgorithm;
+import com.company.controller.hashers.SHA256Hasher;
+import com.company.controller.hashers.SHA512Hasher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,7 +12,7 @@ public class ChatroomApplication {
     public static void main(String[] args) {
         SpringApplication.run(ChatroomApplication.class, args);
 
-        Hasher hasher = new Hasher("SHA256");
+        HashAlgorithm hasher = new SHA256Hasher();
 
         String passwordToHash = hasher.saltAndHash("madalinpass");
         System.out.println(passwordToHash);
