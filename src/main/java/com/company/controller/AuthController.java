@@ -2,6 +2,8 @@ package com.company.controller;
 
 import com.company.controller.database.MongoController;
 import com.company.controller.hashers.HashAlgorithm;
+import com.company.controller.hashers.MadalinHasher;
+import com.company.controller.hashers.PBKDF2Hasher;
 import com.company.controller.hashers.SHA256Hasher;
 import com.company.controller.tokens.TokenClaims;
 import com.company.controller.tokens.TokenManager;

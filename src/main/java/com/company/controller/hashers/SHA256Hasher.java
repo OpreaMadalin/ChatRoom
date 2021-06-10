@@ -3,7 +3,6 @@ package com.company.controller.hashers;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Random;
 
 public class SHA256Hasher implements HashAlgorithm {

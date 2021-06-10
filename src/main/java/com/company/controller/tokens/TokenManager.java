@@ -3,7 +3,7 @@ package com.company.controller.tokens;
 import java.util.Map;
 
 public class TokenManager {
-    private final static String tokenConnector = ".";
+    private final static String tokenConnector = "~";
     private final String privateKey;
     private final String publicKey;
     private final String signature;
@@ -31,14 +31,18 @@ public class TokenManager {
     }
 
     public TokenClaims verifyToken(String str) {
+
         String decryptedToken = decrypt(str);
+
         if (decryptedToken.equals("")) {
             return null;
         }
         String[] tokenComponent = decryptedToken.split(tokenConnector);
+
         if (tokenComponent.length != 2) {
             return null;
         }
+
         if (!tokenComponent[0].equals(signature)) {
             return null;
         }
@@ -52,7 +56,7 @@ public class TokenManager {
 
     public String decrypt(String str) {
         return str.replace(
-                "encryptedwith" + publicKey + "shouldbedecrypted" + privateKey + ":", "");
+                "encryptedwith" + publicKey + "shouldbedecryptedwith" + privateKey + ":", "");
     }
 
     public String getPrivateKey() {

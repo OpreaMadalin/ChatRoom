@@ -5,7 +5,7 @@ import java.util.Base64;
 
 public class TokenClaims {
 
-    private final static String strConnector = ":::";
+    private final static String strConnector = "~";
 
     private final String username;
     private final int expiryTimestamp;
