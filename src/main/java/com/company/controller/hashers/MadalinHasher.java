@@ -1,36 +1,31 @@
 package com.company.controller.hashers;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
 
 public class MadalinHasher implements HashAlgorithm {
     @Override
     public String hash(String passwordToHash) {
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] messageDigest = md.digest(passwordToHash.getBytes());
             BigInteger generateHash = new BigInteger(messageDigest);
             return generateHash.toString(16);
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public String genSalt() {
-        int leftLimit = 48;
-        int rightLimit = 122;
-        int targetStringLength = 22;
-        Random random = new Random();
-
-        return random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
+        int saltLength = 22;
+        boolean useLetters = true;
+        boolean useNumbers = true;
+        String generatedSalt = RandomStringUtils.random(saltLength, useLetters, useNumbers);
+        return generatedSalt;
     }
 
     @Override

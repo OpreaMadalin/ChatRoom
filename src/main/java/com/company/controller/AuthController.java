@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @RestController
 public class AuthController {
 
-    private final HashAlgorithm hasher = new SHA256Hasher();
+    private final HashAlgorithm hasher = new MadalinHasher();
 
     @RequestMapping("/register")
     public RegisterResponse register(@RequestBody RegisterRequestBody body) {
