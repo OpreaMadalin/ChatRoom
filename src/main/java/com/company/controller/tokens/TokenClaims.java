@@ -24,8 +24,11 @@ public class TokenClaims {
     }
 
     public static TokenClaims fromBase64(String encodedClaims) {
-        String claimsStr = Arrays.toString(Base64.getDecoder().decode(encodedClaims));
-        return TokenClaims.fromString(claimsStr);
+//        String claimsStr = Arrays.toString(Base64.getDecoder().decode(encodedClaims));
+//        return TokenClaims.fromString(claimsStr);
+        byte[] claimsStr = Base64.getDecoder().decode(encodedClaims);
+        String decodedString = new String(claimsStr);
+        return TokenClaims.fromString(decodedString);
     }
 
     public static TokenClaims fromString(String claimsStr) {

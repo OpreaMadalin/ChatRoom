@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 @RestController
 public class AuthController {
@@ -67,7 +68,7 @@ public class AuthController {
         if (claims == null) {
             throw new UnauthorizedException();
         }
-        return new GetChatroomsResponse(new ArrayList<>());
+        return new GetChatroomsResponse(new ArrayList<>(Collections.singleton("Chatroom work good")));
     }
 
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
