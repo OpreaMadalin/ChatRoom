@@ -3,12 +3,15 @@ package com.company.controller.database;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class MongoController {
 
@@ -57,6 +60,37 @@ public class MongoController {
         doc.append("username", username);
         doc.append("password", password);
         getUsersCollection().insertOne(doc);
+    }
+
+    public Document getChatRoomWithName(String name) {
+        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+
+        Bson bsonFilter = Filters.eq("name", name);
+        return chatRoomsCollection.find(bsonFilter).first();
+    }
+
+    public ArrayList<Document> getChatrooms() {
+        MongoCollection<Document> chatroomsCollections = getChatRoomsCollection();
+        MongoCursor<Document> cursor = chatroomsCollections.find().cursor();
+        ArrayList<Document> result = new ArrayList<>();
+
+        try {
+            while (cursor.hasNext()) {
+                Document currentDoc = cursor.next();
+                result.add(currentDoc);
+            }
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+        return result;
+    }
+
+    public void addChatroom(String name) {
+        Document doc = new Document();
+        doc.append("name", name);
+        getChatRoomsCollection().insertOne(doc);
     }
 
     public MongoCollection<Document> getChatRoomsCollection() {

@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MadalinHasher implements HashAlgorithm {
+
     @Override
     public String hash(String passwordToHash) {
         try {

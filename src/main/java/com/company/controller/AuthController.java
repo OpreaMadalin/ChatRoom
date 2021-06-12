@@ -2,8 +2,6 @@ package com.company.controller;
 
 import com.company.controller.database.MongoController;
 import com.company.controller.hashers.HashAlgorithm;
-import com.company.controller.hashers.MadalinHasher;
-import com.company.controller.hashers.PBKDF2Hasher;
 import com.company.controller.hashers.SHA256Hasher;
 import com.company.controller.tokens.TokenClaims;
 import com.company.controller.tokens.TokenManager;
@@ -14,12 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 @RestController
 public class AuthController {
 
-    private final HashAlgorithm hasher = new MadalinHasher();
+    private final HashAlgorithm hasher = new SHA256Hasher();
 
     @RequestMapping("/register")
     public RegisterResponse register(@RequestBody RegisterRequestBody body) {
@@ -68,7 +65,40 @@ public class AuthController {
         if (claims == null) {
             throw new UnauthorizedException();
         }
-        return new GetChatroomsResponse(new ArrayList<>(Collections.singleton("Chatroom work good")));
+
+        MongoController mc = new MongoController();
+
+        ArrayList<Document> chatrooms = mc.getChatrooms();
+        ArrayList<String> chatroomNames = new ArrayList<>();
+
+        for (Document chatroom : chatrooms) {
+            chatroomNames.add(chatroom.get("name").toString());
+        }
+        return new GetChatroomsResponse(chatroomNames);
+    }
+
+    @PostMapping("/chatrooms")
+    public PostChatroomResponse addChatroom(@RequestHeader(name = "Authorization") String authHeader,
+                                            @RequestBody PostChatroomRequestBody body) {
+
+        TokenManager tm = new TokenManager();
+        TokenClaims claims = tm.verifyToken(authHeader);
+
+        if (claims == null) {
+            throw new UnauthorizedException();
+        }
+
+        MongoController mc = new MongoController();
+        mc.addChatroom(body.getName());
+
+        Document result = mc.getChatRoomWithName(body.getName());
+
+        String insertedID = "";
+        if (result != null) {
+            insertedID = ((ObjectId) result.get("_id")).toString();
+        }
+
+        return new PostChatroomResponse(insertedID);
     }
 
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)

@@ -9,6 +9,7 @@ com/company/controller/hashers/MadalinHasher.class
 com/company/model/LoginResponse.class
 com/company/model/RegisterRequestBody.class
 com/company/model/LoginRequestBody.class
+com/company/model/PostChatroomResponse.class
 com/company/controller/GreetingController.class
 com/company/controller/database/MongoController.class
 com/company/controller/hashers/SHA512Hasher.class
@@ -17,3 +18,4 @@ com/company/controller/hashers/PBKDF2Hasher.class
 com/company/controller/AuthController.class
 com/company/model/RegisterResponse.class
 com/company/controller/tokens/TokenClaims.class
+com/company/model/PostChatroomRequestBody.class
