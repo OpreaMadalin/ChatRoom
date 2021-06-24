@@ -2,10 +2,10 @@ package com.company;
 
 import com.company.controller.hashers.HashAlgorithm;
 import com.company.controller.hashers.MadalinHasher;
-import com.company.controller.hashers.PBKDF2Hasher;
 import com.company.controller.hashers.SHA256Hasher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 
 @SpringBootApplication
 public class ChatroomApplication {
@@ -17,6 +17,8 @@ public class ChatroomApplication {
 
         String passwordToHash = hasher.saltAndHash("madalinpass");
         System.out.println(passwordToHash);
+        String passwordToHash1 = hasher.saltAndHash("madalinpass1");
+        System.out.println(passwordToHash1);
 
         boolean check = hasher.checkPassword(passwordToHash, "madalinpass");
         System.out.println(check);

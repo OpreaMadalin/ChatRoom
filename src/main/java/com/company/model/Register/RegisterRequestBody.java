@@ -1,14 +1,14 @@
-package com.company.model;
+package com.company.model.Register;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class LoginRequestBody {
+public class RegisterRequestBody {
 
     private final String username;
     private final String password;
 
-    public LoginRequestBody(@JsonProperty("username") String username,
-                            @JsonProperty("password") String password) {
+    public RegisterRequestBody(@JsonProperty("username") String username,
+                               @JsonProperty("password") String password){
         this.username = username;
         this.password = password;
     }

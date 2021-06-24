@@ -5,10 +5,19 @@ import com.company.controller.hashers.HashAlgorithm;
 import com.company.controller.hashers.SHA256Hasher;
 import com.company.controller.tokens.TokenClaims;
 import com.company.controller.tokens.TokenManager;
-import com.company.model.*;
+import com.company.exception.NotFoundException;
+import com.company.exception.UnauthorizedException;
+import com.company.model.DeleteChatroom.DeleteChatroomRequestBody;
+import com.company.model.DeleteChatroom.DeleteChatroomResponse;
+import com.company.model.GetChatrooms.GetChatroomsResponse;
+import com.company.model.Login.LoginRequestBody;
+import com.company.model.Login.LoginResponse;
+import com.company.model.PostChatroom.PostChatroomRequestBody;
+import com.company.model.PostChatroom.PostChatroomResponse;
+import com.company.model.Register.RegisterRequestBody;
+import com.company.model.Register.RegisterResponse;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -53,16 +62,17 @@ public class AuthController {
         }
 
         TokenManager tm = new TokenManager();
-        String token = tm.generateToken(new TokenClaims(body.getUsername(), 123456));
+        String token = tm.generateToken(new TokenClaims(body.getUsername()));
         return new LoginResponse(token);
     }
 
     @GetMapping("/chatrooms")
     public GetChatroomsResponse getChatrooms(@RequestHeader(name = "Authorization") String authHeader) {
-        TokenManager tm = new TokenManager();
-        TokenClaims claims = tm.verifyToken(authHeader);
 
-        if (claims == null) {
+        TokenManager tm = new TokenManager();
+        boolean claims = tm.verifyToken(authHeader);
+
+        if (!claims) {
             throw new UnauthorizedException();
         }
 
@@ -82,9 +92,9 @@ public class AuthController {
                                             @RequestBody PostChatroomRequestBody body) {
 
         TokenManager tm = new TokenManager();
-        TokenClaims claims = tm.verifyToken(authHeader);
+        boolean claims = tm.verifyToken(authHeader);
 
-        if (claims == null) {
+        if (!claims) {
             throw new UnauthorizedException();
         }
 
@@ -101,8 +111,29 @@ public class AuthController {
         return new PostChatroomResponse(insertedID);
     }
 
-    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-    public static class UnauthorizedException extends RuntimeException {
+    @DeleteMapping("/chatrooms")
+    public DeleteChatroomResponse deleteChatrooms(@RequestHeader(name = "Authorization") String authHeader,
+                                                  @RequestBody DeleteChatroomRequestBody body) {
+
+        TokenManager tm = new TokenManager();
+        boolean claims = tm.verifyToken(authHeader);
+
+        if (!claims) {
+            throw new UnauthorizedException();
+        }
+
+        MongoController mc = new MongoController();
+
+        Document result = mc.getChatRoomWithName(body.getName());
+
+        if (result == null) {
+            throw new NotFoundException();
+        }
+
+        mc.deleteChatroom(body.getName());
+
+        return new DeleteChatroomResponse(body.getName() + " deleted");
     }
+
 
 }

@@ -64,7 +64,6 @@ public class MongoController {
 
     public Document getChatRoomWithName(String name) {
         MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
-
         Bson bsonFilter = Filters.eq("name", name);
         return chatRoomsCollection.find(bsonFilter).first();
     }
@@ -91,6 +90,12 @@ public class MongoController {
         Document doc = new Document();
         doc.append("name", name);
         getChatRoomsCollection().insertOne(doc);
+    }
+
+    public void deleteChatroom(String name) {
+        Document doc = new Document();
+        doc.append("name", name);
+        getChatRoomsCollection().deleteOne(doc);
     }
 
     public MongoCollection<Document> getChatRoomsCollection() {

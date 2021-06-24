@@ -1,5 +1,7 @@
 package com.company.controller.hashers;
 
+import com.company.utils.Constants;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,7 +30,7 @@ public class SHA256Hasher implements HashAlgorithm {
     public String genSalt() {
         int leftLimit = 48;
         int rightLimit = 122;
-        int targetStringLength = 22;
+        int targetStringLength = Constants.SALT_LENGTH;
         Random random = new Random();
 
         return random.ints(leftLimit, rightLimit + 1)
@@ -46,8 +48,8 @@ public class SHA256Hasher implements HashAlgorithm {
 
     @Override
     public boolean checkPassword(String hashPass, String candidate) {
-        String str = hashPass.substring(22);
-        String hash = hash(hashPass.substring(0, 22) + candidate);
+        String str = hashPass.substring(Constants.SALT_LENGTH);
+        String hash = hash(hashPass.substring(0, Constants.SALT_LENGTH) + candidate);
         return hash.equals(str);
     }
 
