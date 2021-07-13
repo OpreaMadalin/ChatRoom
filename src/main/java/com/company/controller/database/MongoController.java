@@ -68,6 +68,23 @@ public class MongoController {
         return chatRoomsCollection.find(bsonFilter).first();
     }
 
+    public ArrayList<Document> getChatroomWithName(String name) {
+        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+        MongoCursor<Document> cursor = chatRoomsCollection.find(Filters.eq("name", name)).cursor();
+        ArrayList<Document> result = new ArrayList<>();
+        try {
+            while (cursor.hasNext()) {
+                Document currentDoc = cursor.next();
+                result.add(currentDoc);
+            }
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+        return result;
+    }
+
     public ArrayList<Document> getChatrooms() {
         MongoCollection<Document> chatroomsCollections = getChatRoomsCollection();
         MongoCursor<Document> cursor = chatroomsCollections.find().cursor();

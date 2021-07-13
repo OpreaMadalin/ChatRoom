@@ -7,8 +7,10 @@ import com.company.controller.tokens.TokenClaims;
 import com.company.controller.tokens.TokenManager;
 import com.company.exception.NotFoundException;
 import com.company.exception.UnauthorizedException;
+import com.company.model.ChatroomMessagesRequestBody;
 import com.company.model.DeleteChatroom.DeleteChatroomRequestBody;
 import com.company.model.DeleteChatroom.DeleteChatroomResponse;
+import com.company.model.GetChatroomMessages;
 import com.company.model.GetChatrooms.GetChatroomsResponse;
 import com.company.model.Login.LoginRequestBody;
 import com.company.model.Login.LoginResponse;
@@ -21,6 +23,7 @@ import org.bson.types.ObjectId;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class AuthController {
@@ -31,17 +34,13 @@ public class AuthController {
     public RegisterResponse register(@RequestBody RegisterRequestBody body) {
 
         String hashedPassword = hasher.saltAndHash(body.getPassword());
-
         MongoController mc = new MongoController();
         mc.addUser(body.getUsername(), hashedPassword);
-
         Document result = mc.getUserWithUsername(body.getUsername());
-
         String insertedID = "";
         if (result != null) {
             insertedID = ((ObjectId) result.get("_id")).toString();
         }
-
         return new RegisterResponse(insertedID);
 
     }
@@ -54,13 +53,11 @@ public class AuthController {
         if (result == null) {
             throw new UnauthorizedException();
         }
-
         String referencePassword = (String) result.get("password");
         boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
         if (!isPasswordValid) {
             throw new UnauthorizedException();
         }
-
         TokenManager tm = new TokenManager();
         String token = tm.generateToken(new TokenClaims(body.getUsername()));
         return new LoginResponse(token);
@@ -71,20 +68,36 @@ public class AuthController {
 
         TokenManager tm = new TokenManager();
         boolean claims = tm.verifyToken(authHeader);
-
         if (!claims) {
             throw new UnauthorizedException();
         }
-
         MongoController mc = new MongoController();
-
         ArrayList<Document> chatrooms = mc.getChatrooms();
         ArrayList<String> chatroomNames = new ArrayList<>();
-
         for (Document chatroom : chatrooms) {
             chatroomNames.add(chatroom.get("name").toString());
         }
         return new GetChatroomsResponse(chatroomNames);
+    }
+
+    @GetMapping("/chatroomMessages")
+    public GetChatroomMessages getChatroomMessages(@RequestHeader(name = "Authorization") String authHeader,
+                                                    @RequestBody ChatroomMessagesRequestBody body) {
+
+        TokenManager tm = new TokenManager();
+        boolean claims = tm.verifyToken(authHeader);
+
+        if (!claims) {
+            throw new UnauthorizedException();
+        }
+        MongoController mc = new MongoController();
+        ArrayList<Document> chatrooms = mc.getChatroomWithName(body.getName());
+        ArrayList<String> chatroomMessages = new ArrayList<>();
+        for (Document chatroom : chatrooms) {
+            List<String> messages = chatroom.getList("messages", String.class);
+            chatroomMessages.addAll(messages);
+        }
+        return new GetChatroomMessages(chatroomMessages);
     }
 
     @PostMapping("/chatrooms")
@@ -97,17 +110,13 @@ public class AuthController {
         if (!claims) {
             throw new UnauthorizedException();
         }
-
         MongoController mc = new MongoController();
         mc.addChatroom(body.getName());
-
         Document result = mc.getChatRoomWithName(body.getName());
-
         String insertedID = "";
         if (result != null) {
             insertedID = ((ObjectId) result.get("_id")).toString();
         }
-
         return new PostChatroomResponse(insertedID);
     }
 
@@ -117,21 +126,15 @@ public class AuthController {
 
         TokenManager tm = new TokenManager();
         boolean claims = tm.verifyToken(authHeader);
-
         if (!claims) {
             throw new UnauthorizedException();
         }
-
         MongoController mc = new MongoController();
-
         Document result = mc.getChatRoomWithName(body.getName());
-
         if (result == null) {
             throw new NotFoundException();
         }
-
         mc.deleteChatroom(body.getName());
-
         return new DeleteChatroomResponse(body.getName() + " deleted");
     }
 
