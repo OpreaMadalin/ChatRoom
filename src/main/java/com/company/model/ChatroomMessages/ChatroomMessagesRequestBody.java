@@ -1,4 +1,4 @@
-package com.company.model;
+package com.company.model.ChatroomMessages;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
