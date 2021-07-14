@@ -17,7 +17,9 @@
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/ChatroomMessages/ChatroomMessagesRequestBody.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/hashers/SHA512Hasher.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/AuthController.java
+/home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/ChatroomMessages/Message.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/Register/RegisterRequestBody.java
+/home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/ChatroomMessages/ClientMessage.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/model/GetChatrooms/GetChatroomsResponse.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/database/MongoController.java
 /home/dmoprea/Downloads/Chatroom/src/main/java/com/company/controller/tokens/TokenManager.java

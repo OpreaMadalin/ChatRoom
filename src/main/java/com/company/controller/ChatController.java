@@ -58,6 +58,21 @@ public class ChatController {
         return new GetChatroomMessages(chatroomMessages);
     }
 
+    @PostMapping("/addChatroomMessages")
+    public void addMessages(@RequestHeader(name = "Authorization") String authHeader,
+                            @RequestBody ChatroomMessagesRequestBody body) {
+
+        TokenManager tm = new TokenManager();
+        boolean claims = tm.verifyToken(authHeader);
+
+        if (!claims) {
+            throw new UnauthorizedException();
+        }
+        MongoController mc = new MongoController();
+        mc.addMessages(body.getName(), body.getMessages());
+
+    }
+
     @PostMapping("/chatrooms")
     public PostChatroomResponse addChatroom(@RequestHeader(name = "Authorization") String authHeader,
                                             @RequestBody PostChatroomRequestBody body) {

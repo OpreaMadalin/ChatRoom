@@ -10,8 +10,11 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import static com.mongodb.client.model.Updates.set;
 
 public class MongoController {
 
@@ -113,6 +116,17 @@ public class MongoController {
         Document doc = new Document();
         doc.append("name", name);
         getChatRoomsCollection().deleteOne(doc);
+    }
+
+    public void addMessages(String name, String message) {
+        List<String> content = new ArrayList<>();
+        content.add(message);
+
+        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+        Bson bsonFilter = Filters.eq("name", name);
+        Bson updateOperation = set("messages", content);
+        chatRoomsCollection.updateOne(bsonFilter, updateOperation);
+
     }
 
     public MongoCollection<Document> getChatRoomsCollection() {
