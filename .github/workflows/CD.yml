@@ -23,5 +23,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Run the mock deployment script
+      - name: Run the mock deployment script 
         run: bash mock-deployment-script.sh ${{ secrets.REMOTE_SERVER_IP }}
+        
+      - name: Curl into deployed server
+        run: curl "${{ secrets.REMOTE_SERVER_IP }}:8080/chatrooms"
