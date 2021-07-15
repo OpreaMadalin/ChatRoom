@@ -33,7 +33,7 @@ public class ChatController {
         ArrayList<Document> chatrooms = mc.getChatrooms();
         ArrayList<String> chatroomNames = new ArrayList<>();
         for (Document chatroom : chatrooms) {
-            chatroomNames.add(chatroom.get("name").toString());
+            chatroomNames.add(">" + chatroom.get("name").toString());
         }
         return new GetChatroomsResponse(chatroomNames);
     }

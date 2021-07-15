@@ -1,7 +1,6 @@
 #!/bin/bash
 
 rm -r ./target/
-
 ./mvnw package
 
 docker build -t chatroom-rest-image .
