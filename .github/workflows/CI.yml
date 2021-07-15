@@ -36,4 +36,4 @@ jobs:
           echo test, and deploy your project.
           
       - name: Run mock tests
-        run: bash-mock-testing-script.sh
+        run: bash mock-testing-script.sh
