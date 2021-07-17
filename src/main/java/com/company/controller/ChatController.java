@@ -1,5 +1,6 @@
 package com.company.controller;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.company.controller.database.MongoController;
 import com.company.controller.tokens.TokenManager;
 import com.company.exception.NotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ChatController {
@@ -25,51 +27,52 @@ public class ChatController {
     public GetChatroomsResponse getChatrooms(@RequestHeader(name = "Authorization") String authHeader) {
 
         TokenManager tm = new TokenManager();
-        boolean claims = tm.verifyToken(authHeader);
-        if (!claims) {
+        Map<String, Claim> claims = tm.verifyToken(authHeader);
+        if (claims == null) {
             throw new UnauthorizedException();
         }
         MongoController mc = new MongoController();
         ArrayList<Document> chatrooms = mc.getChatrooms();
         ArrayList<String> chatroomNames = new ArrayList<>();
         for (Document chatroom : chatrooms) {
-            chatroomNames.add(">" + chatroom.get("name").toString());
+            chatroomNames.add(chatroom.get("chatroomName").toString());
         }
         return new GetChatroomsResponse(chatroomNames);
     }
 
-    @GetMapping("/chatroomMessages")
+    @PostMapping("/getChatroomMessages")
     public GetChatroomMessages getChatroomMessages(@RequestHeader(name = "Authorization") String authHeader,
                                                    @RequestBody ChatroomMessagesRequestBody body) {
 
         TokenManager tm = new TokenManager();
-        boolean claims = tm.verifyToken(authHeader);
+        Map<String, Claim> claims = tm.verifyToken(authHeader);
 
-        if (!claims) {
+        if (claims == null) {
             throw new UnauthorizedException();
         }
         MongoController mc = new MongoController();
-        ArrayList<Document> chatrooms = mc.getChatroomWithName(body.getName());
-        ArrayList<String> chatroomMessages = new ArrayList<>();
+        ArrayList<Document> chatrooms = mc.getChatroomWithName(body.getChatroomName());
+        ArrayList<Document> chatroomMessages = new ArrayList<>();
         for (Document chatroom : chatrooms) {
-            List<String> messages = chatroom.getList("messages", String.class);
+            List<Document> messages = chatroom.getList("messages", Document.class);
             chatroomMessages.addAll(messages);
         }
         return new GetChatroomMessages(chatroomMessages);
     }
 
-    @PostMapping("/addChatroomMessages")
+    @PostMapping("/addChatroomMessage")
     public void addMessages(@RequestHeader(name = "Authorization") String authHeader,
                             @RequestBody ChatroomMessagesRequestBody body) {
 
         TokenManager tm = new TokenManager();
-        boolean claims = tm.verifyToken(authHeader);
+        Map<String, Claim> claims = tm.verifyToken(authHeader);
 
-        if (!claims) {
+        if (claims == null) {
             throw new UnauthorizedException();
         }
+
         MongoController mc = new MongoController();
-        mc.addMessages(body.getName(), body.getMessages());
+        mc.addMessage(body.getChatroomName(), body.getMessages(), claims.get("username").toString());
 
     }
 
@@ -78,14 +81,14 @@ public class ChatController {
                                             @RequestBody PostChatroomRequestBody body) {
 
         TokenManager tm = new TokenManager();
-        boolean claims = tm.verifyToken(authHeader);
+        Map<String, Claim> claims = tm.verifyToken(authHeader);
 
-        if (!claims) {
+        if (claims == null) {
             throw new UnauthorizedException();
         }
         MongoController mc = new MongoController();
-        mc.addChatroom(body.getName());
-        Document result = mc.getChatRoomWithName(body.getName());
+        mc.addChatroom(body.getChatroomName());
+        Document result = mc.getChatRoomWithName(body.getChatroomName());
         String insertedID = "";
         if (result != null) {
             insertedID = ((ObjectId) result.get("_id")).toString();
@@ -98,16 +101,16 @@ public class ChatController {
                                                   @RequestBody DeleteChatroomRequestBody body) {
 
         TokenManager tm = new TokenManager();
-        boolean claims = tm.verifyToken(authHeader);
-        if (!claims) {
+        Map<String, Claim> claims = tm.verifyToken(authHeader);
+        if (claims == null) {
             throw new UnauthorizedException();
         }
         MongoController mc = new MongoController();
-        Document result = mc.getChatRoomWithName(body.getName());
+        Document result = mc.getChatRoomWithName(body.getChatroomName());
         if (result == null) {
             throw new NotFoundException();
         }
-        mc.deleteChatroom(body.getName());
-        return new DeleteChatroomResponse(body.getName() + " deleted");
+        mc.deleteChatroom(body.getChatroomName());
+        return new DeleteChatroomResponse(body.getChatroomName() + " deleted");
     }
 }

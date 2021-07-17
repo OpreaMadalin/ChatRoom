@@ -1,6 +1,5 @@
 com/company/controller/database/MongoCredentials.class
 com/company/model/Register/RegisterResponse.class
-com/company/model/ChatroomMessages/Message.class
 com/company/controller/ChatController.class
 com/company/controller/hashers/HashAlgorithm.class
 com/company/utils/Constants.class
@@ -13,7 +12,6 @@ com/company/exception/UnauthorizedException.class
 com/company/model/Login/LoginRequestBody.class
 com/company/model/ChatroomMessages/ChatroomMessagesRequestBody.class
 com/company/controller/hashers/SHA256Hasher.class
-com/company/model/ChatroomMessages/ClientMessage.class
 com/company/model/DeleteChatroom/DeleteChatroomResponse.class
 com/company/controller/tokens/TokenManager.class
 com/company/ChatroomApplication.class
@@ -25,4 +23,3 @@ com/company/model/ChatroomMessages/GetChatroomMessages.class
 com/company/controller/AuthController.class
 com/company/model/PostChatroom/PostChatroomRequestBody.class
 com/company/exception/NotFoundException.class
-com/company/controller/tokens/TokenClaims.class

@@ -10,11 +10,11 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import static com.mongodb.client.model.Updates.set;
+import static com.mongodb.client.model.Updates.push;
 
 public class MongoController {
 
@@ -65,15 +65,15 @@ public class MongoController {
         getUsersCollection().insertOne(doc);
     }
 
-    public Document getChatRoomWithName(String name) {
+    public Document getChatRoomWithName(String chatroomName) {
         MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
-        Bson bsonFilter = Filters.eq("name", name);
+        Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
         return chatRoomsCollection.find(bsonFilter).first();
     }
 
-    public ArrayList<Document> getChatroomWithName(String name) {
+    public ArrayList<Document> getChatroomWithName(String chatroomName) {
         MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
-        MongoCursor<Document> cursor = chatRoomsCollection.find(Filters.eq("name", name)).cursor();
+        MongoCursor<Document> cursor = chatRoomsCollection.find(Filters.eq("chatroomName", chatroomName)).cursor();
         ArrayList<Document> result = new ArrayList<>();
         try {
             while (cursor.hasNext()) {
@@ -106,25 +106,28 @@ public class MongoController {
         return result;
     }
 
-    public void addChatroom(String name) {
+    public void addChatroom(String chatroomName) {
         Document doc = new Document();
-        doc.append("name", name);
+        doc.append("chatroomName", chatroomName);
         getChatRoomsCollection().insertOne(doc);
     }
 
-    public void deleteChatroom(String name) {
+    public void deleteChatroom(String chatroomName) {
         Document doc = new Document();
-        doc.append("name", name);
+        doc.append("chatroomName", chatroomName);
         getChatRoomsCollection().deleteOne(doc);
     }
 
-    public void addMessages(String name, String message) {
-        List<String> content = new ArrayList<>();
-        content.add(message);
+    public void addMessage(String chatroomName, String message, String username) {
 
         MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
-        Bson bsonFilter = Filters.eq("name", name);
-        Bson updateOperation = set("messages", content);
+        Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
+
+        Document messageDoc = new Document("username", username)
+                .append("message", message)
+                .append("timestamp", new Date().toString());
+
+        Bson updateOperation = push("messages", messageDoc);
         chatRoomsCollection.updateOne(bsonFilter, updateOperation);
 
     }

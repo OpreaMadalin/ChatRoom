@@ -3,15 +3,15 @@ package com.company.model.DeleteChatroom;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DeleteChatroomRequestBody {
-    private final String name;
+    private final String chatroomName;
 
-    public DeleteChatroomRequestBody(@JsonProperty("name") String name) {
-        this.name = name;
+    public DeleteChatroomRequestBody(@JsonProperty("chatroomName") String chatroomName) {
+        this.chatroomName = chatroomName;
 
     }
 
-    public String getName() {
-        return this.name;
+    public String getChatroomName() {
+        return this.chatroomName;
     }
 
 

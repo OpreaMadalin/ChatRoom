@@ -1,6 +1,4 @@
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/Register/RegisterRequestBody.java
-/home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/ChatroomMessages/ClientMessage.java
-/home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/ChatroomMessages/Message.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/ChatroomApplication.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/controller/tokens/TokenManager.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/controller/ChatController.java
@@ -19,7 +17,6 @@
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/controller/hashers/SHA512Hasher.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/controller/database/MongoCredentials.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/exception/UnauthorizedException.java
-/home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/controller/tokens/TokenClaims.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/PostChatroom/PostChatroomResponse.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/utils/Constants.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/controller/database/MongoController.java

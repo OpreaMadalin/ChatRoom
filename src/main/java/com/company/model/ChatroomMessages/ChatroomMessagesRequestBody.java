@@ -5,17 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ChatroomMessagesRequestBody {
 
-    private final String name;
+    private final String chatroomName;
     private final String messages;
 
-    public ChatroomMessagesRequestBody(@JsonProperty("name") String name,
+    public ChatroomMessagesRequestBody(@JsonProperty("chatroomName") String chatroomName,
                                        @JsonProperty("messages") String messages) {
-        this.name = name;
+        this.chatroomName = chatroomName;
         this.messages = messages;
     }
 
-    public String getName() {
-        return name;
+    public String getChatroomName() {
+        return chatroomName;
     }
 
     public String getMessages() {

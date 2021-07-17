@@ -4,6 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Map;
@@ -11,7 +15,6 @@ import java.util.Map;
 import static java.util.Base64.getEncoder;
 
 public class TokenManager {
-    private final static String tokenConnector = ".";
     private final String privateKey;
     private final String publicKey;
     private final String signature;
@@ -31,11 +34,8 @@ public class TokenManager {
         this.signature = env.get("AUTH_SIGNATURE");
     }
 
-    public String sign(String str) {
-        return encrypt(signature + tokenConnector + str);
-    }
 
-    public String generateToken(TokenClaims claims) {
+    public String generateToken(String username) {
 
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
         long now = new Date().getTime();
@@ -45,7 +45,7 @@ public class TokenManager {
         String jwtToken = JWT.create()
                 .withIssuer("JWT")
                 .withIssuer("Madalin")
-                .withClaim("claims", String.valueOf(claims))
+                .withClaim("username", username)
                 .withExpiresAt(expireDate)
                 .sign(algorithm);
 
@@ -53,7 +53,7 @@ public class TokenManager {
     }
 
 
-    public boolean verifyToken(String token) {
+    public Map<String, Claim> verifyToken(String token) {
 
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
         try {
@@ -62,27 +62,11 @@ public class TokenManager {
                     .withIssuer("Madalin")
                     .acceptExpiresAt(expireInSeconds)
                     .build();
-
-            verifier.verify(token);
-            return true;
+            return verifier.verify(token).getClaims();
         } catch (JWTVerificationException ex) {
-            return false;
+            return null;
         }
     }
-
-    public static String toBase64(String str) {
-        return getEncoder().encodeToString(str.getBytes());
-    }
-
-    public String encrypt(String str) {
-        return "encryptedwith" + publicKey + "shouldbedecryptedwith" + privateKey + ":" + str;
-    }
-
-    public String decrypt(String str) {
-        return str.replace(
-                "encryptedwith" + publicKey + "shouldbedecryptedwith" + privateKey + ":", "");
-    }
-
 
     public String getPrivateKey() {
         return privateKey;
