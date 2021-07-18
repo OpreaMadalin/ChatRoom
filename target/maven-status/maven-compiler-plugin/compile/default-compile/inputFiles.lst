@@ -11,6 +11,7 @@
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/controller/hashers/HashAlgorithm.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/Login/LoginRequestBody.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/PostChatroom/PostChatroomRequestBody.java
+/home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/UpdateChatroomPassword/UpdateChatroomPasswordRequestBody.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/Login/LoginResponse.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/UpdateChatroom/UpdateChatroomResponse.java
 /home/dmoprea/Downloads/OpreaMadalin_FinalProject_API/src/main/java/com/company/model/ChatroomMessages/ChatroomMessagesRequestBody.java

@@ -16,6 +16,7 @@ import com.company.model.PostChatroom.PostChatroomRequestBody;
 import com.company.model.PostChatroom.PostChatroomResponse;
 import com.company.model.UpdateChatroom.UpdateChatroomRequestBody;
 import com.company.model.UpdateChatroom.UpdateChatroomResponse;
+import com.company.model.UpdateChatroomPassword.UpdateChatroomPasswordRequestBody;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.web.bind.annotation.*;
@@ -144,9 +145,9 @@ public class ChatController {
         return new DeleteChatroomResponse(body.getChatroomName() + " deleted");
     }
 
-    @PostMapping("/updateChatroom")
-    public UpdateChatroomResponse updateChatroom(@RequestHeader(name = "Authorization") String authHeader,
-                                                 @RequestBody UpdateChatroomRequestBody body) {
+    @PostMapping("/updateChatroomName")
+    public UpdateChatroomResponse updateChatroomName(@RequestHeader(name = "Authorization") String authHeader,
+                                                     @RequestBody UpdateChatroomRequestBody body) {
         TokenManager tm = new TokenManager();
         Map<String, Claim> claims = tm.verifyToken(authHeader);
         if (claims == null) {
@@ -162,8 +163,32 @@ public class ChatController {
         if (!isPasswordValid) {
             throw new UnauthorizedException();
         }
-        mc.updateChatroom(body.getChatroomName(), body.getNewChatroomName());
+        mc.updateChatroomName(body.getChatroomName(), body.getNewChatroomName());
         return new UpdateChatroomResponse(body.getNewChatroomName());
+    }
 
+    @PostMapping("/updateChatroomPassword")
+    public void updateChatroomPassword(@RequestHeader(name = "Authorization") String authHeader,
+                                       @RequestBody UpdateChatroomPasswordRequestBody body) {
+
+        TokenManager tm = new TokenManager();
+        Map<String, Claim> claims = tm.verifyToken(authHeader);
+        if (claims == null) {
+            throw new UnauthorizedException();
+        }
+        MongoController mc = new MongoController();
+
+        Document result = mc.getChatRoomWithName(body.getChatroomName());
+        if (result == null) {
+            throw new NotFoundException();
+        }
+        String hashedPassword = hasher.saltAndHash(body.getNewPassword());
+        String referencePassword = (String) result.get("password");
+        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+        if (!isPasswordValid) {
+            throw new UnauthorizedException();
+        }
+
+        mc.updateChatroomPassword(body.getChatroomName(), hashedPassword);
     }
 }

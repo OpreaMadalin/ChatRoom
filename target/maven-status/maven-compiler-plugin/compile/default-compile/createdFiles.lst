@@ -12,6 +12,7 @@ com/company/controller/hashers/PBKDF2Hasher.class
 com/company/model/Register/RegisterRequestBody.class
 com/company/exception/UnauthorizedException.class
 com/company/model/Login/LoginRequestBody.class
+com/company/model/UpdateChatroomPassword/UpdateChatroomPasswordRequestBody.class
 com/company/model/ChatroomMessages/ChatroomMessagesRequestBody.class
 com/company/controller/hashers/SHA256Hasher.class
 com/company/model/DeleteChatroom/DeleteChatroomResponse.class

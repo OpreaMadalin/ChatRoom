@@ -120,14 +120,23 @@ public class MongoController {
         getChatRoomsCollection().deleteOne(doc);
     }
 
-    public void updateChatroom(String chatroomName, String newChatroomName) {
+    public void updateChatroomName(String chatroomName, String newChatroomName) {
 
         MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
         Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
-
         Document doc = new Document();
         doc.append("chatroomName", newChatroomName);
         Bson updateOperation = set("chatroomName", newChatroomName);
+        chatRoomsCollection.updateOne(bsonFilter, updateOperation);
+    }
+
+    public void updateChatroomPassword(String chatroomName, String newChatroomPassword) {
+
+        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+        Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
+        Document doc = new Document();
+        doc.append("password", newChatroomPassword);
+        Bson updateOperation = set("password", newChatroomPassword);
         chatRoomsCollection.updateOne(bsonFilter, updateOperation);
     }
 
