@@ -107,9 +107,10 @@ public class MongoController {
         return result;
     }
 
-    public void addChatroom(String chatroomName) {
+    public void addChatroom(String chatroomName, String password) {
         Document doc = new Document();
         doc.append("chatroomName", chatroomName);
+        doc.append("password", password);
         getChatRoomsCollection().insertOne(doc);
     }
 

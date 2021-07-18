@@ -2,6 +2,8 @@ package com.company.controller;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.company.controller.database.MongoController;
+import com.company.controller.hashers.HashAlgorithm;
+import com.company.controller.hashers.SHA256Hasher;
 import com.company.controller.tokens.TokenManager;
 import com.company.exception.NotFoundException;
 import com.company.exception.UnauthorizedException;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 @RestController
 public class ChatController {
+
+    private final HashAlgorithm hasher = new SHA256Hasher();
 
     @GetMapping("/chatrooms")
     public GetChatroomsResponse getChatrooms(@RequestHeader(name = "Authorization") String authHeader) {
@@ -53,6 +57,15 @@ public class ChatController {
             throw new UnauthorizedException();
         }
         MongoController mc = new MongoController();
+        Document result = mc.getChatRoomWithName(body.getChatroomName());
+        if (result == null) {
+            throw new NotFoundException();
+        }
+        String referencePassword = (String) result.get("password");
+        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+        if (!isPasswordValid) {
+            throw new UnauthorizedException();
+        }
         ArrayList<Document> chatrooms = mc.getChatroomWithName(body.getChatroomName());
         ArrayList<Document> chatroomMessages = new ArrayList<>();
         for (Document chatroom : chatrooms) {
@@ -74,6 +87,15 @@ public class ChatController {
         }
 
         MongoController mc = new MongoController();
+        Document result = mc.getChatRoomWithName(body.getChatroomName());
+        if (result == null) {
+            throw new NotFoundException();
+        }
+        String referencePassword = (String) result.get("password");
+        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+        if (!isPasswordValid) {
+            throw new UnauthorizedException();
+        }
         mc.addMessage(body.getChatroomName(), body.getMessages(), claims.get("username").toString());
 
     }
@@ -88,8 +110,9 @@ public class ChatController {
         if (claims == null) {
             throw new UnauthorizedException();
         }
+        String hashedPassword = hasher.saltAndHash(body.getPassword());
         MongoController mc = new MongoController();
-        mc.addChatroom(body.getChatroomName());
+        mc.addChatroom(body.getChatroomName(), hashedPassword);
         Document result = mc.getChatRoomWithName(body.getChatroomName());
         String insertedID = "";
         if (result != null) {
@@ -112,6 +135,11 @@ public class ChatController {
         if (result == null) {
             throw new NotFoundException();
         }
+        String referencePassword = (String) result.get("password");
+        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+        if (!isPasswordValid) {
+            throw new UnauthorizedException();
+        }
         mc.deleteChatroom(body.getChatroomName());
         return new DeleteChatroomResponse(body.getChatroomName() + " deleted");
     }
@@ -125,6 +153,15 @@ public class ChatController {
             throw new UnauthorizedException();
         }
         MongoController mc = new MongoController();
+        Document result = mc.getChatRoomWithName(body.getChatroomName());
+        if (result == null) {
+            throw new NotFoundException();
+        }
+        String referencePassword = (String) result.get("password");
+        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+        if (!isPasswordValid) {
+            throw new UnauthorizedException();
+        }
         mc.updateChatroom(body.getChatroomName(), body.getNewChatroomName());
         return new UpdateChatroomResponse(body.getNewChatroomName());
 
