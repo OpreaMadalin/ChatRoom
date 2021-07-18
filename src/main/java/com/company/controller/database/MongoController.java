@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static com.mongodb.client.model.Updates.push;
+import static com.mongodb.client.model.Updates.set;
 
 public class MongoController {
 
@@ -116,6 +117,17 @@ public class MongoController {
         Document doc = new Document();
         doc.append("chatroomName", chatroomName);
         getChatRoomsCollection().deleteOne(doc);
+    }
+
+    public void updateChatroom(String chatroomName, String newChatroomName) {
+
+        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+        Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
+
+        Document doc = new Document();
+        doc.append("chatroomName", newChatroomName);
+        Bson updateOperation = set("chatroomName", newChatroomName);
+        chatRoomsCollection.updateOne(bsonFilter, updateOperation);
     }
 
     public void addMessage(String chatroomName, String message, String username) {

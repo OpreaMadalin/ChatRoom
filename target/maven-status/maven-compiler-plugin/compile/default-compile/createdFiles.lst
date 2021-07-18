@@ -1,7 +1,9 @@
 com/company/controller/database/MongoCredentials.class
+com/company/model/UpdateChatroom/UpdateChatroomRequestBody.class
 com/company/model/Register/RegisterResponse.class
 com/company/controller/ChatController.class
 com/company/controller/hashers/HashAlgorithm.class
+com/company/model/UpdateChatroom/UpdateChatroomResponse.class
 com/company/utils/Constants.class
 com/company/model/DeleteChatroom/DeleteChatroomRequestBody.class
 com/company/model/PostChatroom/PostChatroomResponse.class

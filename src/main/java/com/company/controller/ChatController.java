@@ -12,6 +12,8 @@ import com.company.model.DeleteChatroom.DeleteChatroomResponse;
 import com.company.model.GetChatrooms.GetChatroomsResponse;
 import com.company.model.PostChatroom.PostChatroomRequestBody;
 import com.company.model.PostChatroom.PostChatroomResponse;
+import com.company.model.UpdateChatroom.UpdateChatroomRequestBody;
+import com.company.model.UpdateChatroom.UpdateChatroomResponse;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.web.bind.annotation.*;
@@ -112,5 +114,19 @@ public class ChatController {
         }
         mc.deleteChatroom(body.getChatroomName());
         return new DeleteChatroomResponse(body.getChatroomName() + " deleted");
+    }
+
+    @PostMapping("/updateChatroom")
+    public UpdateChatroomResponse updateChatroom(@RequestHeader(name = "Authorization") String authHeader,
+                                                 @RequestBody UpdateChatroomRequestBody body) {
+        TokenManager tm = new TokenManager();
+        Map<String, Claim> claims = tm.verifyToken(authHeader);
+        if (claims == null) {
+            throw new UnauthorizedException();
+        }
+        MongoController mc = new MongoController();
+        mc.updateChatroom(body.getChatroomName(), body.getNewChatroomName());
+        return new UpdateChatroomResponse(body.getNewChatroomName());
+
     }
 }
