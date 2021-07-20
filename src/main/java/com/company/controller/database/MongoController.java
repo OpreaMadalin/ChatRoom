@@ -9,10 +9,7 @@ import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static com.mongodb.client.model.Updates.push;
 import static com.mongodb.client.model.Updates.set;
@@ -67,14 +64,16 @@ public class MongoController {
     }
 
     public Document getChatRoomWithName(String chatroomName) {
-        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
         Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
         return chatRoomsCollection.find(bsonFilter).first();
     }
 
     public ArrayList<Document> getChatroomWithName(String chatroomName) {
-        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
-        MongoCursor<Document> cursor = chatRoomsCollection.find(Filters.eq("chatroomName", chatroomName)).cursor();
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
+        MongoCursor<Document> cursor = chatRoomsCollection.find(Filters.eq("chatroomName", chatroomName))
+                .cursor();
+
         ArrayList<Document> result = new ArrayList<>();
         try {
             while (cursor.hasNext()) {
@@ -90,7 +89,7 @@ public class MongoController {
     }
 
     public ArrayList<Document> getChatrooms() {
-        MongoCollection<Document> chatroomsCollections = getChatRoomsCollection();
+        MongoCollection<Document> chatroomsCollections = getChatroomsCollection();
         MongoCursor<Document> cursor = chatroomsCollections.find().cursor();
         ArrayList<Document> result = new ArrayList<>();
 
@@ -107,22 +106,28 @@ public class MongoController {
         return result;
     }
 
-    public void addChatroom(String chatroomName, String password) {
+    public void addChatroom(String chatroomName, String password, String creatorName) {
+
+        ArrayList<String> adminUserNames = new ArrayList<>();
+        adminUserNames.add(creatorName);
+
         Document doc = new Document();
         doc.append("chatroomName", chatroomName);
         doc.append("password", password);
-        getChatRoomsCollection().insertOne(doc);
+        doc.append("admins", adminUserNames);
+        doc.append("bannedUsers", new ArrayList<String>());
+        getChatroomsCollection().insertOne(doc);
     }
 
     public void deleteChatroom(String chatroomName) {
         Document doc = new Document();
         doc.append("chatroomName", chatroomName);
-        getChatRoomsCollection().deleteOne(doc);
+        getChatroomsCollection().deleteOne(doc);
     }
 
     public void updateChatroomName(String chatroomName, String newChatroomName) {
 
-        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
         Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
         Document doc = new Document();
         doc.append("chatroomName", newChatroomName);
@@ -132,7 +137,7 @@ public class MongoController {
 
     public void updateChatroomPassword(String chatroomName, String newChatroomPassword) {
 
-        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
         Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
         Document doc = new Document();
         doc.append("password", newChatroomPassword);
@@ -142,7 +147,7 @@ public class MongoController {
 
     public void addMessage(String chatroomName, String message, String username) {
 
-        MongoCollection<Document> chatRoomsCollection = getChatRoomsCollection();
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
         Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
 
         Document messageDoc = new Document("username", username)
@@ -154,8 +159,73 @@ public class MongoController {
 
     }
 
-    public MongoCollection<Document> getChatRoomsCollection() {
+    public MongoCollection<Document> getChatroomsCollection() {
         return getDatabase().getCollection(chatRoomsCollectionName);
+    }
+
+    public boolean isAdmin(String username, String chatroom) {
+
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
+        Bson bsonFilter = Filters.eq("chatroomName", chatroom);
+
+        try (MongoCursor<Document> cursor = chatRoomsCollection.find(bsonFilter).cursor()) {
+            while (cursor.hasNext()) {
+                Document currentDoc = cursor.next();
+                List<String> admins;
+                admins = currentDoc.getList("admins", String.class, new ArrayList<>());
+
+                for (String admin : admins) {
+                    if (admin.equals(username)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isBanned(String username, String chatroom){
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
+        Bson bsonFilter = Filters.eq("chatroomName", chatroom);
+
+        try (MongoCursor<Document> cursor = chatRoomsCollection.find(bsonFilter).cursor()) {
+            while (cursor.hasNext()) {
+                Document currentDoc = cursor.next();
+                List<String> bannedUsers;
+                bannedUsers = currentDoc.getList("bannedUsers", String.class, new ArrayList<>());
+
+                for (String bannedUser : bannedUsers) {
+                    if (bannedUser.equals(username)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void addAdmin(String chatroomName, String username) {
+
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
+        Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
+
+        Bson updateOperation = push("admins", username);
+        chatRoomsCollection.updateOne(bsonFilter, updateOperation);
+
+    }
+
+    public void addBannedUser(String chatroomName, String username) {
+
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
+        Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
+
+        Bson updateOperation = push("bannedUsers", username);
+        chatRoomsCollection.updateOne(bsonFilter, updateOperation);
+
     }
 
 
