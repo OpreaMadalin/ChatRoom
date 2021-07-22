@@ -59,8 +59,14 @@ public class ChatController {
         }
 
         MongoController mc = new MongoController();
-        String hashedPassword = hasher.saltAndHash(body.getPassword());
-        mc.addChatroom(body.getChatroomName(), hashedPassword, claims.get("username").asString());
+
+        if (body.getPassword().isEmpty()) {
+            mc.addChatroom(body.getChatroomName(), claims.get("username").asString());
+        } else {
+            String hashedPassword = hasher.saltAndHash(body.getPassword());
+            mc.addChatroom(body.getChatroomName(), hashedPassword, claims.get("username").asString());
+        }
+
         Document result = mc.getChatRoomWithName(body.getChatroomName());
         String insertedID = "";
         if (result != null) {
@@ -90,10 +96,14 @@ public class ChatController {
             throw new NotFoundException();
         }
 
-        String referencePassword = (String) result.get("password");
-        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
-        if (!isPasswordValid) {
-            throw new UnauthorizedException();
+        boolean existPass = mc.checkPasswordFieldExistInChatroom(body.getChatroomName());
+
+        if (existPass) {
+            String referencePassword = (String) result.get("password");
+            boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+            if (!isPasswordValid) {
+                throw new UnauthorizedException();
+            }
         }
 
         mc.deleteChatroom(body.getChatroomName());
@@ -118,10 +128,14 @@ public class ChatController {
         if (result == null) {
             throw new NotFoundException();
         }
-        String referencePassword = (String) result.get("password");
-        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
-        if (!isPasswordValid) {
-            throw new UnauthorizedException();
+
+        boolean existPass = mc.checkPasswordFieldExistInChatroom(body.getChatroomName());
+        if (existPass) {
+            String referencePassword = (String) result.get("password");
+            boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+            if (!isPasswordValid) {
+                throw new UnauthorizedException();
+            }
         }
         mc.updateChatroomName(body.getChatroomName(), body.getNewChatroomName());
         return new UpdateChatroomNameResponse(body.getNewChatroomName());
@@ -149,13 +163,21 @@ public class ChatController {
         }
 
         String hashedPassword = hasher.saltAndHash(body.getNewPassword());
-        String referencePassword = (String) result.get("password");
-        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
-        if (!isPasswordValid) {
-            throw new UnauthorizedException();
+
+        boolean existPass = mc.checkPasswordFieldExistInChatroom(body.getChatroomName());
+        if (existPass) {
+            String referencePassword = (String) result.get("password");
+            boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+            if (!isPasswordValid) {
+                throw new UnauthorizedException();
+            }
         }
 
-        mc.updateChatroomPassword(body.getChatroomName(), hashedPassword);
+        if (body.getNewPassword().isEmpty()) {
+            mc.deleteChatroomPassword(body.getChatroomName());
+        } else {
+            mc.updateChatroomPassword(body.getChatroomName(), hashedPassword);
+        }
 
         return new UpdateChatroomPasswordResponse(body.getChatroomName());
     }

@@ -46,13 +46,16 @@ public class MsgController {
             throw new NotFoundException();
         }
 
-        String referencePassword = (String) result.get("password");
-        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
-        if (!isPasswordValid) {
-            throw new UnauthorizedException();
+        boolean existPass = mc.checkPasswordFieldExistInChatroom(body.getChatroomName());
+        if (existPass) {
+            String referencePassword = (String) result.get("password");
+            boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+            if (!isPasswordValid) {
+                throw new UnauthorizedException();
+            }
         }
-        mc.addMessage(body.getChatroomName(), body.getMessage(), claims.get("username").asString());
 
+        mc.addMessage(body.getChatroomName(), body.getMessage(), claims.get("username").asString());
     }
 
     @PostMapping("/getChatroomMessages")
@@ -77,11 +80,13 @@ public class MsgController {
             throw new NotFoundException();
         }
 
-        String referencePassword = (String) result.get("password");
-        boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
-
-        if (!isPasswordValid) {
-            throw new UnauthorizedException();
+        boolean existPass = mc.checkPasswordFieldExistInChatroom(body.getChatroomName());
+        if (existPass) {
+            String referencePassword = (String) result.get("password");
+            boolean isPasswordValid = hasher.checkPassword(referencePassword, body.getPassword());
+            if (!isPasswordValid) {
+                throw new UnauthorizedException();
+            }
         }
 
         ArrayList<Document> chatrooms = mc.getChatroomWithName(body.getChatroomName());

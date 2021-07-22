@@ -11,8 +11,7 @@ import org.bson.conversions.Bson;
 
 import java.util.*;
 
-import static com.mongodb.client.model.Updates.push;
-import static com.mongodb.client.model.Updates.set;
+import static com.mongodb.client.model.Updates.*;
 
 public class MongoController {
 
@@ -120,6 +119,39 @@ public class MongoController {
         getChatroomsCollection().insertOne(doc);
     }
 
+    public void addChatroom(String chatroomName, String creatorName) {
+
+        ArrayList<String> adminUserNames = new ArrayList<>();
+        adminUserNames.add(creatorName);
+
+        Document doc = new Document();
+        doc.append("chatroomName", chatroomName);
+        doc.append("admins", adminUserNames);
+        doc.append("bannedUsers", new ArrayList<String>());
+        getChatroomsCollection().insertOne(doc);
+    }
+
+    public boolean checkPasswordFieldExistInChatroom(String chatroomName) {
+
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
+        Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
+
+        try (MongoCursor<Document> cursor = chatRoomsCollection.find(bsonFilter).cursor()) {
+
+            while (cursor.hasNext()) {
+                Document currentDoc = cursor.next();
+                boolean password;
+                password = currentDoc.containsKey("password");
+                if (password) {
+                    return true;
+                }
+            }
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void deleteChatroom(String chatroomName) {
         Document doc = new Document();
         doc.append("chatroomName", chatroomName);
@@ -146,6 +178,14 @@ public class MongoController {
         chatRoomsCollection.updateOne(bsonFilter, updateOperation);
     }
 
+    public void deleteChatroomPassword(String chatroomName) {
+
+        MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
+        Bson bsonFilter = Filters.eq("chatroomName", chatroomName);
+        Bson updateOperation = unset("password");
+        chatRoomsCollection.updateOne(bsonFilter, updateOperation);
+    }
+
     public void addMessage(String chatroomName, String message, String username) {
 
         MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
@@ -157,7 +197,6 @@ public class MongoController {
 
         Bson updateOperation = push("messages", messageDoc);
         chatRoomsCollection.updateOne(bsonFilter, updateOperation);
-
     }
 
     public MongoCollection<Document> getChatroomsCollection() {
@@ -174,7 +213,6 @@ public class MongoController {
                 Document currentDoc = cursor.next();
                 List<String> admins;
                 admins = currentDoc.getList("admins", String.class, new ArrayList<>());
-
                 for (String admin : admins) {
                     if (admin.equals(username)) {
                         return true;
@@ -188,6 +226,7 @@ public class MongoController {
     }
 
     public boolean isBanned(String username, String chatroom) {
+
         MongoCollection<Document> chatRoomsCollection = getChatroomsCollection();
         Bson bsonFilter = Filters.eq("chatroomName", chatroom);
 
@@ -216,7 +255,6 @@ public class MongoController {
 
         Bson updateOperation = push("admins", username);
         chatroomsCollection.updateOne(bsonFilter, updateOperation);
-
     }
 
     public void addBannedUser(String chatroomName, String username) {
@@ -226,8 +264,6 @@ public class MongoController {
 
         Bson updateOperation = push("bannedUsers", username);
         chatroomsCollection.updateOne(bsonFilter, updateOperation);
-
     }
-
 
 }
