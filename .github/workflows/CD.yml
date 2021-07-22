@@ -27,4 +27,4 @@ jobs:
         run: bash mock-deployment-script.sh ${{ secrets.REMOTE_SERVER_IP }}
         
       - name: Curl into deployed server
-        run: curl "${{ secrets.REMOTE_SERVER_IP }}:8080//home/Chatroom"
+        run: curl "${{ secrets.REMOTE_SERVER_IP }}:8080/home/Chatroom"
